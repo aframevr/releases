@@ -68602,7 +68602,7 @@ registerShader('portal', {
       'vec2 sampleUV;',
       'float borderThickness = clamp(exp(-vDistance / 50.0), 0.6, 0.95);',
       'sampleUV.y = saturate(direction.y * 0.5  + 0.5);',
-      'sampleUV.x = atan(direction.z, direction.x) * -RECIPROCAL_PI2 + 0.5;',
+      'sampleUV.x = atan(direction.z, -direction.x) * -RECIPROCAL_PI2 + 0.5;',
       'if (vDistanceToCenter > borderThickness && borderEnabled == 1.0) {',
         'gl_FragColor = vec4(strokeColor, 1.0);',
       '} else {',
@@ -76473,11 +76473,13 @@ module.exports.AScene = registerElement('a-scene', {
         var canvas = this.canvas;
         var embedded = this.getAttribute('embedded') && !this.is('vr-mode');
         var size;
+        var isEffectPresenting = this.effect && this.effect.isPresenting;
         // Do not update renderer, if a camera or a canvas have not been injected.
         // In VR mode, VREffect handles canvas resize based on the dimensions returned by
         // the getEyeParameters function of the WebVR API. These dimensions are independent of
-        // the window size, therefore should not be overwritten with the window's width and height.
-        if (!camera || !canvas || this.is('vr-mode')) { return; }
+        // the window size, therefore should not be overwritten with the window's width and height,
+        // except when in fullscreen mode.
+        if (!camera || !canvas || (this.is('vr-mode') && (this.isMobile || isEffectPresenting))) { return; }
         // Update camera.
         size = getCanvasSize(canvas, embedded);
         camera.aspect = size.width / size.height;
@@ -78452,7 +78454,7 @@ _dereq_('./core/a-mixin');
 _dereq_('./extras/components/');
 _dereq_('./extras/primitives/');
 
-console.log('A-Frame Version: 0.7.0 (Date 19-09-2017, Commit #b4b1f89)');
+console.log('A-Frame Version: 0.7.0 (Date 22-09-2017, Commit #75ac4d8)');
 console.log('three Version:', pkg.dependencies['three']);
 console.log('WebVR Polyfill Version:', pkg.dependencies['webvr-polyfill']);
 
