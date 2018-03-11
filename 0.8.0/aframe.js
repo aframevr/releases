@@ -66671,6 +66671,9 @@ module.exports.Component = registerComponent('cursor', {
   },
 
   clearCurrentIntersection: function () {
+    var index;
+    var intersection;
+    var intersections;
     var cursorEl = this.el;
 
     // Nothing to be cleared.
@@ -66688,6 +66691,15 @@ module.exports.Component = registerComponent('cursor', {
 
     // Clear fuseTimeout.
     clearTimeout(this.fuseTimeout);
+
+    // Set intersection to another raycasted element if any.
+    intersections = this.el.components.raycaster.intersections;
+    if (intersections.length === 0) { return; }
+    // Exclude the cursor.
+    index = intersections[0].object.el === cursorEl ? 1 : 0;
+    intersection = intersections[index];
+    if (!intersection) { return; }
+    this.setIntersection(intersection.object.el, intersection);
   },
 
   /**
@@ -68640,10 +68652,11 @@ module.exports.Component = registerComponent('look-controls', {
     // Not dragging or not enabled.
     if (!this.data.enabled || (!this.mouseDown && !this.pointerLocked)) { return; }
 
-     // Calculate delta.
-    movementX = event.movementX || event.mozMovementX;
-    movementY = event.movementY || event.mozMovementY;
-    if (movementX === undefined || movementY === undefined) {
+    // Calculate delta.
+    if (this.pointerLocked) {
+      movementX = event.movementX || event.mozMovementX || 0;
+      movementY = event.movementY || event.mozMovementY || 0;
+    } else {
       movementX = event.screenX - previousMouseEvent.screenX;
       movementY = event.screenY - previousMouseEvent.screenY;
     }
@@ -77711,6 +77724,7 @@ registerPrimitive('a-camera', {
     fov: 'camera.fov',
     'look-controls-enabled': 'look-controls.enabled',
     near: 'camera.near',
+    'pointer-lock-enabled': 'look-controls.pointerLockEnabled',
     'wasd-controls-enabled': 'wasd-controls.enabled',
     'reverse-mouse-drag': 'look-controls.reverseMouseDrag',
     zoom: 'camera.zoom'
@@ -77897,6 +77911,7 @@ registerPrimitive('a-sky', utils.extendDeep({}, getMeshMixin(), {
     },
     material: {
       color: '#FFF',
+      side: 'back',
       shader: 'flat',
       npot: true
     },
@@ -78435,7 +78450,7 @@ _dereq_('./core/a-mixin');
 _dereq_('./extras/components/');
 _dereq_('./extras/primitives/');
 
-console.log('A-Frame Version: 0.8.0 (Date 2018-03-09, Commit #c4f24250)');
+console.log('A-Frame Version: 0.8.0 (Date 2018-03-11, Commit #82934b02)');
 console.log('three Version:', pkg.dependencies['three']);
 console.log('WebVR Polyfill Version:', pkg.dependencies['webvr-polyfill']);
 
