@@ -45665,4 +45665,4 @@ module.exports = JSON.parse('{"name":"aframe","version":"1.4.0","description":"A
 /******/ })()
 ;
 });
-//# sourceMappingURL=aframe-v1.4.0.js.map
+//# sourceMappingURL=aframe.js.map
